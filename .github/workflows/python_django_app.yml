@@ -17,7 +17,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install docker-compose
-    - name: Run tests & linting
-      run: |
-        docker-compose run app sh -c "python manage.py test"
-        docker-compose run app sh -c "flake8"
+    - name: Build docker-compose
+      run: docker-compose up -d --build
+    - name: Run linting
+      run: docker-compose run app sh -c "flake8"
+    - name: Run tests
+      run: docker-compose run app sh -c "python manage.py test"
