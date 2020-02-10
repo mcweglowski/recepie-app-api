@@ -57,7 +57,7 @@ class Ingredient(models.Model):
         return self.name
 
 
-class Receipe(models.Model):
+class Recipe(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
