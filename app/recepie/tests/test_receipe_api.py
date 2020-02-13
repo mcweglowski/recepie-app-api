@@ -158,5 +158,5 @@ class PrivateRecepieApiTests(TestCase):
         ingredients = recipe.ingredients.all()
 
         self.assertEqual(ingredients.count(), 2)
-        self.assertIn(ingredients, ingredient1)
-        self.assertIn(ingredients, ingredient2)
+        self.assertIn(ingredient1, ingredients)
+        self.assertIn(ingredient2, ingredients)
