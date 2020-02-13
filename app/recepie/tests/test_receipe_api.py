@@ -13,7 +13,7 @@ from recepie.serializers import RecipeSerializer, RecipeDetailSerializer
 RECIPES_URL = reverse('recepie:recipe-list')
 
 
-def detail_url(recipe_id)
+def detail_url(recipe_id):
     return reverse('recepie:recipe-detail', args=[recipe_id])
 
 
@@ -93,7 +93,7 @@ class PrivateRecepieApiTests(TestCase):
         recipe.tags.add(sample_tag(user=self.user))
         recipe.ingredients.add(sample_ingredient(user=self.user))
 
-        url = detail_url(recepie.id)
+        url = detail_url(recipe.id)
         res = self.client.get(url)
 
         serializer = RecipeDetailSerializer(recipe)
