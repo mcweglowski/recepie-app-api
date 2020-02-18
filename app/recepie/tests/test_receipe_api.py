@@ -34,7 +34,7 @@ def sample_ingredient(user, name="Cinnamon"):
     return Ingredient.objects.create(user=user, name=name)
 
 
-def sample_recepie(user, **params):
+def sample_recipe(user, **params):
     defaults = {
         'title': 'Sample recepie',
         'time_minutes': 10,
@@ -68,8 +68,8 @@ class PrivateRecepieApiTests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recepies(self):
-        sample_recepie(self.user)
-        sample_recepie(self.user)
+        sample_recipe(self.user)
+        sample_recipe(self.user)
 
         res = self.client.get(RECIPES_URL)
 
@@ -85,8 +85,8 @@ class PrivateRecepieApiTests(TestCase):
             'P@$$w0rd'
         )
 
-        sample_recepie(user2)
-        sample_recepie(self.user)
+        sample_recipe(user2)
+        sample_recipe(self.user)
 
         res = self.client.get(RECIPES_URL)
 
@@ -98,7 +98,7 @@ class PrivateRecepieApiTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_view_recipe_detail(self):
-        recipe = sample_recepie(user=self.user)
+        recipe = sample_recipe(user=self.user)
         recipe.tags.add(sample_tag(user=self.user))
         recipe.ingredients.add(sample_ingredient(user=self.user))
 
@@ -171,7 +171,7 @@ class PrivateRecepieApiTests(TestCase):
         self.assertIn(ingredient2, ingredients)
 
     def test_partial_update_recipe(self):
-        recipe = sample_recepie(user=self.user)
+        recipe = sample_recipe(user=self.user)
         recipe.tags.add(sample_tag(user=self.user))
         new_tag = sample_tag(user=self.user, name='Curry')
 
@@ -193,7 +193,7 @@ class PrivateRecepieApiTests(TestCase):
         self.assertIn(new_tag, tags)
 
     def test_full_update_recipe(self):
-        recipe = sample_recepie(user=self.user)
+        recipe = sample_recipe(user=self.user)
         recipe.tags.add(sample_tag(user=self.user))
         payload = {
             'title': 'Spaghetti carbonara',
@@ -210,6 +210,50 @@ class PrivateRecepieApiTests(TestCase):
         tags = recipe.tags.all()
         self.assertEqual(tags.count(), 0)
 
+    def test_filter_recipes_by_tags(self):
+        recipe1 = sample_recipe(user=self.user, title='Thai vegetabke cyrry')
+        recipe2 = sample_recipe(user=self.user, title='Aubergine with tahini')
+        tag1 = sample_tag(user=self.user, name='Vegan')
+        tag2 = sample_tag(user=self.user, name='Vegetarian')
+        recipe1.tags.add(tag1)
+        recipe2.tags.add(tag2)
+        recipe3 = sample_recipe(user=self.user, title='Fish and chips')
+
+        res = self.client.get(
+            RECIPES_URL,
+            {'tags': f'{tag1.id},{tag2.id}'}
+        )
+
+        serializer1 = RecipeSerializer(recipe1)
+        serializer2 = RecipeSerializer(recipe2)
+        serializer3 = RecipeSerializer(recipe3)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+    def test_filter_recipes_by_ingredients(self):
+        recipe1 = sample_recipe(user=self.user, title='Posh beans on toast')
+        recipe2 = sample_recipe(user=self.user, title='Chicken cacciatore')
+        ingredient1 = sample_ingredient(user=self.user, name='Feta cheese')
+        ingredient2 = sample_ingredient(user=self.user, name='Chicken')
+        recipe1.ingredients.add(ingredient1)
+        recipe2.ingredients.add(ingredient2)
+        recipe3 = sample_recipe(user=self.user, title='Steak and mushrooms')
+
+        res = self.client.get(
+            RECIPES_URL,
+            {'ingredients': f'{ingredient1.id},{ingredient2.id}'}
+        )
+
+        serializer1 = RecipeSerializer(recipe1)
+        serializer2 = RecipeSerializer(recipe2)
+        serializer3 = RecipeSerializer(recipe3)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
 
 class RecipeImageUploadTests(TestCase):
     def setUp(self):
@@ -218,7 +262,7 @@ class RecipeImageUploadTests(TestCase):
             'user@email.com',
             'P@$$w0rd')
         self.client.force_authenticate(self.user)
-        self.recipe = sample_recepie(user=self.user)
+        self.recipe = sample_recipe(user=self.user)
 
     def tearDown(self):
         self.recipe.image.delete()
