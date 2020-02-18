@@ -80,7 +80,7 @@ class PrivateTagsApiTests(TestCase):
 
     def test_retrieve_tags_assigned_to_recipes(self):
         tag1 = Tag.objects.create(user=self.user, name='Breakfast')
-        tag2 = Tag.objects.create(user=self.user, name='Lunch')        
+        tag2 = Tag.objects.create(user=self.user, name='Lunch')
         recipe = Recipe.objects.create(
             title='Coriander eggs on toast',
             time_minutes=10,
