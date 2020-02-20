@@ -1,18 +1,18 @@
-import tempfile
 import os
+import tempfile
 
 from PIL import Image
+
+from core.models import Ingredient, Recipe, Tag
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from recepie.serializers import RecipeDetailSerializer, RecipeSerializer
+
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from core.models import Recipe, Tag, Ingredient
-
-from recepie.serializers import RecipeSerializer, RecipeDetailSerializer
 
 
 RECIPES_URL = reverse('recepie:recipe-list')

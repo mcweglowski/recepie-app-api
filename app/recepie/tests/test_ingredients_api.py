@@ -1,10 +1,13 @@
+from core.models import Ingredient, Recipe
+
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
+
+from recepie.serializers import IngredientSerializer
+
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Ingredient, Recipe
-from recepie.serializers import IngredientSerializer
 
 
 INGREDIENTS_URL = reverse('recepie:ingredient-list')
